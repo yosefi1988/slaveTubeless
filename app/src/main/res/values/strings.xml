@@ -3,4 +3,11 @@
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="sms_send">پیامک ارسال شد</string>
+    <string name="sms_not_send">پیامک ارسال نشد</string>
+    <string name="sms_not_send_no_service">سرویس ارسال پیامک موجود نیست</string>
+    <string name="sms_not_send_no_radio">امکان ارسال پیامک موجود نیست آنتن ندارید</string>
+    <string name="sms_receive">پیامک توسط مستر دریافت شد</string>
+    <string name="sms_not_receive">پیامک توسط مستر دریافت نشد</string>
+    <string name="cannot_send_sms">امکان ارسال پیامک موجود نیست</string>
 </resources>
