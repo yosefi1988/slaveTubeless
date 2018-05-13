@@ -63,8 +63,12 @@ public class replyAsyncTask extends AsyncTask {
         super.onPostExecute(o);
         GooglePushResponse googlePushResponse = (GooglePushResponse) o;
 
-        for (GooglePushResponse.Results results : googlePushResponse.getResults()) {
-            Toast.makeText(mContext,results.error,Toast.LENGTH_LONG).show();
+        try {
+            for (GooglePushResponse.Results results : googlePushResponse.getResults()) {
+                Toast.makeText(mContext, results.error, Toast.LENGTH_LONG).show();
+            }
+        }catch (Exception ex){
+            Toast.makeText(mContext, ex.getMessage(), Toast.LENGTH_LONG).show();
         }
     }
 }

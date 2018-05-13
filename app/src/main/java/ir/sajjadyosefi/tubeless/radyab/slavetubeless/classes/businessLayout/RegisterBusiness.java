@@ -43,7 +43,7 @@ public class RegisterBusiness {
     public String createResponseJson(){
         Global.setting = DatabaseUtils.loadSetting(mContext);
 
-        return  "{\"to\": \""+ Global.setting.masterPushNotificationToken +"\",\"data\": {\"message\": \""+ "json" +"\"}}";
+        return  "{\"to\": \""+ Global.setting.masterPushNotificationToken +"\",\"data\": {\"message\": \""+ "json----" +Global.setting.getSlavePushNotificationToken()+ "----json" +"\"}}";
     }
 
 }
