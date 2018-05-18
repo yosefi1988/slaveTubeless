@@ -1,9 +1,7 @@
 package ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.networkLayout;
 
 import android.content.Context;
-import android.os.Build;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -16,15 +14,14 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.Date;
 
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.BasicObject;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.push.GooglePushResponse;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.BasicObject;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.GooglePushResponse;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.other.JsonDateDeserializer;
 
 
@@ -56,27 +53,37 @@ import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.other.JsonDateDeser
             os.write(outputBytes);
             os.close();
 
-            // Reading response
-            InputStream input = httpcon.getInputStream();
-            InputStreamReader inputStreamReader = new InputStreamReader(input);
-            String result = null;
-            GooglePushResponse googlePushResponse = new GooglePushResponse();
-            try {
-                BufferedReader reader = new BufferedReader(inputStreamReader);
-                for (String line; (line = reader.readLine()) != null;) {
-                    System.out.println(line);
-                    result = line;
-                    System.out.println(result);
-                }
-                System.out.println(result);
-            }catch (Exception ex){
 
+
+            int responseCode = httpcon.getResponseCode(); //can call this instead of con.connect()
+            if (responseCode >= 400 && responseCode <= 499) {
+                //throw new Exception("Bad authentication status: " + responseCode); //provide a more meaningful exception message
             }
+            else {
 
-            Gson gson = new Gson();
-            googlePushResponse = gson.fromJson(result, GooglePushResponse.class);
-            System.out.println("Http POST request sent!");
-            return googlePushResponse;
+
+                // Reading response
+                InputStream input = httpcon.getInputStream();
+                InputStreamReader inputStreamReader = new InputStreamReader(input);
+                String result = null;
+                GooglePushResponse googlePushResponse = new GooglePushResponse();
+                try {
+                    BufferedReader reader = new BufferedReader(inputStreamReader);
+                    for (String line; (line = reader.readLine()) != null; ) {
+                        System.out.println(line);
+                        result = line;
+                        System.out.println(result);
+                    }
+                    System.out.println(result);
+                } catch (Exception ex) {
+
+                }
+
+                Gson gson = new Gson();
+                googlePushResponse = gson.fromJson(result, GooglePushResponse.class);
+                System.out.println("Http POST request sent!");
+                return googlePushResponse;
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

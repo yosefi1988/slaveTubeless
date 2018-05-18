@@ -1,11 +1,17 @@
 package ir.sajjadyosefi.tubeless.radyab.slavetubeless.services;
 
+import android.app.Activity;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.Global;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.R;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.activity.waitForRegister;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
 
 /**
  * Created by sajjad on 12/5/2017.
@@ -41,8 +47,20 @@ public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
     private void sendRegistrationToServer(String token) {
         // Add custom implementation, as needed.
         Global.token = token;
-        int a = 1 ;
-        a++;
+        DatabaseUtils.saveSlaveToken(getApplicationContext());
+        if(waitForRegister.textView != null) {
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+                public void run() {
+                    // UI code goes here
+                    // Stuff that updates the UI
+                    waitForRegister.textView.setText("Token Is OK");
+                    waitForRegister.textView.setTextColor(getResources().getColor(R.color.green));
+                }
+            });
+
+
+        }
     }
 
 }

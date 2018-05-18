@@ -5,12 +5,14 @@ import com.j256.ormlite.table.DatabaseTable;
 
 import java.io.Serializable;
 
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.BasicObject;
+
 /**
  * Created by sajjad on 5/10/2018.
  */
 
 @DatabaseTable(tableName = "setting")
-public class Setting extends BasicObject  implements Serializable {
+public class Setting extends BasicObject implements Serializable {
     private static final long serialVersionUID = -222864131214757024L;
 
 

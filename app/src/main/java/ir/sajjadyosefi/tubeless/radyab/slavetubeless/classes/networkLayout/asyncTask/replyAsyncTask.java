@@ -8,11 +8,11 @@ import com.google.gson.Gson;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.Global;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.RegisterBusiness;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.BasicObject;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.BasicObject;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.Sms;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.push.GooglePushResponse;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.push.PushObject;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.GooglePushResponse;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotification.PushObject;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.ResponseToken;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.networkLayout.HttpUtils;
 
 /**
@@ -37,11 +37,8 @@ public class replyAsyncTask extends AsyncTask {
 
     @Override
     protected GooglePushResponse doInBackground(Object[] objects) {
-        PushObject pushObject = new PushObject();
-        pushObject.data = "ssssssss";
-        pushObject.to = Global.setting.getMasterPushNotificationToken();
-        Gson gson = new Gson();
-        String json = gson.toJson(pushObject);
+
+
         GooglePushResponse googlePushResponse = HttpUtils.PostRequestToFCM(mContext,messageToResoinse,BasicObject.class);
 
         return googlePushResponse;

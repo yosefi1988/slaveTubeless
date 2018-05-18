@@ -1,4 +1,4 @@
-package ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.push;
+package ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response;
 
 import java.io.Serializable;
 import java.util.List;

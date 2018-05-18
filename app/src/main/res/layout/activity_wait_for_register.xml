@@ -27,4 +27,12 @@
             android:gravity="center"
             android:textSize="40dp"
             android:text="65148" />
-    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textViewTokenStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="OK"
+        android:textSize="40dp" />
+</LinearLayout>

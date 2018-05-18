@@ -2,11 +2,14 @@ package ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
+
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.Global;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.activity.waitForRegister;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.Sms;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotification.PushObject;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.ResponseToken;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.networkLayout.asyncTask.replyAsyncTask;
 
 /**
@@ -22,7 +25,7 @@ public class RegisterBusiness {
         this.mContext = context;
 
         if (checkMessageRandomCode(message))
-            if (DatabaseUtils.saveMasterTokenToDatabase(context, message.substring(8), sender)) {
+            if (DatabaseUtils.saveMasterToken(context, message.substring(8), sender)) {
                 (new replyAsyncTask(context)).execute();
             }
     }
@@ -30,20 +33,42 @@ public class RegisterBusiness {
 
 
     private boolean checkMessageRandomCode( String message) {
-        if (message.substring(0,3).equals("RND")){
-            if (message.substring(3,8).equals(waitForRegister.generateCode.toString())){
-                return true;
-            }else
-                return false;
+        if(message != null) {
+            if (message.substring(0, 3).equals("RND")) {
+                if (message.substring(3, 8).equals(waitForRegister.generateCode.toString())) {
+                    return true;
+                } else
+                    return false;
 
-        }else
+            } else
+                return false;
+        }
+        else
             return false;
     }
 
     public String createResponseJson(){
         Global.setting = DatabaseUtils.loadSetting(mContext);
 
-        return  "{\"to\": \""+ Global.setting.masterPushNotificationToken +"\",\"data\": {\"message\": \""+ "json----" +Global.setting.getSlavePushNotificationToken()+ "----json" +"\"}}";
+
+        Gson gson = new Gson();
+        ResponseToken responseToken = new ResponseToken();
+        responseToken.setSlavePushNotificationToken(Global.setting.getSlavePushNotificationToken());
+        responseToken.serverStatus.setCode(0);
+        responseToken.serverStatus.setMessage("ok");
+        PushObject pushObject = new PushObject();
+        pushObject.setTo(Global.setting.getMasterPushNotificationToken());
+        pushObject.data.setMessage(gson.toJson(responseToken));//responseToken
+
+        String json = gson.toJson(pushObject);
+
+
+        String sssssssss =  "{\"to\": \""+ Global.setting.masterPushNotificationToken +"\",\"data\": {\"message\": \""+ "json----" +Global.setting.getSlavePushNotificationToken()+ "----json" +"\"}}";
+
+        int a = 5 ;
+        a++;
+
+        return json;
     }
 
 }
