@@ -75,7 +75,7 @@ public class waitForRegister extends AppCompatActivity {
         if(isNetworkOnline(context)){
             Runnable runnable = new Runnable() {
                 public void run() {
-                    String test = "{\"data\":{\"message\":\"{\\\"slavePushNotificationToken\\\":\\\"eNWUjDiHF4o:APA91bETNGt4slw7HSPODtvfmQHJkyiyBwRciJZ5wh63m7QKllxIi3qYUSeAt4yCo7kBetn7wdS_hSr2Wh40jX9Vc_OAp-rjnWMFc1h1Ci2zB9pYRv6prkFCpjOEosW4AQzWQUROtvRF\\\",\\\"serverStatus\\\":{\\\"Code\\\":0,\\\"Message\\\":\\\"ok\\\"}}\"},\"to\":\"crvdz6-gZYg:APA91bEtFQEg2SANboccxaH-VV0P-DZQPJiTdEE4QKE2GX12eZCbnynAjNkGIAM-6uPJSdiTKSXgE16huP28_mKK-Pyieze7VKc7hmvDSvwffX-9n4NxEC_eMvg5P4bd_GW5mvDsSBZo\"}";
+                    String test = "{\"data\":{\"message\":\"{\\\"Type\\\":10,\\\"slavePushNotificationToken\\\":\\\"eNWUjDiHF4o:APA91bETNGt4slw7HSPODtvfmQHJkyiyBwRciJZ5wh63m7QKllxIi3qYUSeAt4yCo7kBetn7wdS_hSr2Wh40jX9Vc_OAp-rjnWMFc1h1Ci2zB9pYRv6prkFCpjOEosW4AQzWQUROtvRF\\\",\\\"serverStatus\\\":{\\\"Code\\\":0,\\\"Message\\\":\\\"ok\\\"}}\"},\"to\":\"crvdz6-gZYg:APA91bEtFQEg2SANboccxaH-VV0P-DZQPJiTdEE4QKE2GX12eZCbnynAjNkGIAM-6uPJSdiTKSXgE16huP28_mKK-Pyieze7VKc7hmvDSvwffX-9n4NxEC_eMvg5P4bd_GW5mvDsSBZo\"}";
                     HttpUtils.PostRequestToFCM(context,test, GooglePushResponse.class);
                 }
             };

@@ -8,6 +8,8 @@ import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotificat
 
 public class ResponseToken extends ServerResponse {
     public String slavePushNotificationToken;
+    public int Type;
+
 
 
     public String getSlavePushNotificationToken() {
@@ -20,5 +22,13 @@ public class ResponseToken extends ServerResponse {
 
     public ResponseToken( ) {
         this.setServerStatus(new ServerStatus());
+    }
+
+    public int getType() {
+        return Type;
+    }
+
+    public void setType(int type) {
+        Type = type;
     }
 }

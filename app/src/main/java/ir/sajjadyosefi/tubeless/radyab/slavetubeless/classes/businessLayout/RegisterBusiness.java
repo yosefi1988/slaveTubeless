@@ -53,6 +53,7 @@ public class RegisterBusiness {
 
         Gson gson = new Gson();
         ResponseToken responseToken = new ResponseToken();
+        responseToken.setType(10);
         responseToken.setSlavePushNotificationToken(Global.setting.getSlavePushNotificationToken());
         responseToken.serverStatus.setCode(0);
         responseToken.serverStatus.setMessage("ok");
