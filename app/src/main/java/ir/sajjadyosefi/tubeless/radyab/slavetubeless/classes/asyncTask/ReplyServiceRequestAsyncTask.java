@@ -49,9 +49,9 @@ public class ReplyServiceRequestAsyncTask extends AsyncTask {
         }else {
             RadyabBusiness radyabBusiness = new RadyabBusiness();
             if (serviceType == RequestService.SERVICE_GEO) {
-                messageToResoinse = radyabBusiness.createResponseJson(location);
+                messageToResoinse = radyabBusiness.createResponseJson(mContext, location);
             } else if (serviceType == RequestService.SERVICE_ADDRESS) {
-                messageToResoinse = radyabBusiness.createResponseJson(address);
+                messageToResoinse = radyabBusiness.createResponseJson(mContext, address);
             }
         }
     }

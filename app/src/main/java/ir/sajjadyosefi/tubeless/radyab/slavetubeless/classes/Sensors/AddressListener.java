@@ -34,11 +34,11 @@ public class AddressListener implements LocationListener {
     public void onLocationChanged(Location loc) {
 //        textViewGeo.setText("");
 //        pb.setVisibility(View.INVISIBLE);
-        Toast.makeText(context, "Location changed: Lat: " + loc.getLatitude() + " Lng: "  + loc.getLongitude(), Toast.LENGTH_SHORT).show();
-        String longitude = "Longitude: " + loc.getLongitude();
-        Log.v(TAG, longitude);
-        String latitude = "Latitude: " + loc.getLatitude();
-        Log.v(TAG, latitude);
+//        Toast.makeText(context, "Location changed: Lat: " + loc.getLatitude() + " Lng: "  + loc.getLongitude(), Toast.LENGTH_SHORT).show();
+//        String longitude = "Longitude: " + loc.getLongitude();
+//        Log.v(TAG, longitude);
+//        String latitude = "Latitude: " + loc.getLatitude();
+//        Log.v(TAG, latitude);
 
         /*------- To get city name from coordinates -------- */
         String fullAddress = null;

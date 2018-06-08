@@ -74,22 +74,22 @@ public class waitForRegister extends AppCompatActivity {
 //            }
 //        });
 
-        //2
-//        if(isNetworkOnline(context)){
-//            Runnable runnable = new Runnable() {
-//                public void run() {
-//                    String test = "{\"data\":{\"message\":\"{\\\"Type\\\":10,\\\"slavePushNotificationToken\\\":\\\"cCsKB7bj7h4:APA91bFJIMZvptnp9DGZdAdFyAfPvRZ96AtXfVakvc4MHuEXl8gqtXB07LI6soUq-hKRSc2up5R_5W195gjom7sIL2zVSmfSrn-W2FPfc1Let15cyEe3hJLreyQY6ak-lM1URxVxymCe\\\",\\\"serverStatus\\\":{\\\"Code\\\":0,\\\"MessageGetService\\\":\\\"ok\\\"}}\"},\"to\":\"czuvcycXdOs:APA91bGowemr3BCJaKSeCWQ6-a18oHwGHd4Y7hMY5lzSCa2Scb7W5SRJk-JzFS6wuurPi8KmmspuB6x8qAGl_LJA-3DjSiZBuFasg8cKpMzs81fvjVZKgWrIM5rXBoOLcIMHTSXzqAaD\"}";
-//                    HttpUtils.PostRequestToFCM(context,test, GooglePushResponse.class);
-//                }
-//            };
-//            Thread mythread = new Thread(runnable);
-//            mythread.start();
-//        }
-//
+//        2
+        if(isNetworkOnline(context)){
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    String test = "{\"data\":{\"message\":\"{\\\"Type\\\":10,\\\"slavePushNotificationToken\\\":\\\"cCsKB7bj7h4:APA91bFJIMZvptnp9DGZdAdFyAfPvRZ96AtXfVakvc4MHuEXl8gqtXB07LI6soUq-hKRSc2up5R_5W195gjom7sIL2zVSmfSrn-W2FPfc1Let15cyEe3hJLreyQY6ak-lM1URxVxymCe\\\",\\\"serverStatus\\\":{\\\"Code\\\":0,\\\"MessageGetService\\\":\\\"ok\\\"}}\"},\"to\":\"czuvcycXdOs:APA91bGowemr3BCJaKSeCWQ6-a18oHwGHd4Y7hMY5lzSCa2Scb7W5SRJk-JzFS6wuurPi8KmmspuB6x8qAGl_LJA-3DjSiZBuFasg8cKpMzs81fvjVZKgWrIM5rXBoOLcIMHTSXzqAaD\"}";
+                    HttpUtils.PostRequestToFCM(context,test, GooglePushResponse.class);
+                }
+            };
+            Thread mythread = new Thread(runnable);
+            mythread.start();
+        }
+
 
         textViewGeo = (TextView) findViewById(R.id.textViewGeo);
         //3
-        String sssssssssss = "{message={\"ServiceType\":3}}";
+        String sssssssssss = "{message={\"ServiceType\":3}}";//1
         handleNotifications(getApplicationContext(),sssssssssss);
 
 

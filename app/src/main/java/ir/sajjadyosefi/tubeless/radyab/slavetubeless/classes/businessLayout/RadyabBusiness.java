@@ -4,15 +4,19 @@ import android.Manifest;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 
 import com.google.gson.Gson;
 
 import java.util.List;
+import java.util.Locale;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.Global;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.Sensors.TubelessLocationListener;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.asyncTask.ReplyServiceRequestAsyncTask;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotification.PushDataJson;
@@ -82,9 +86,11 @@ public class RadyabBusiness {
         return aaaaa;
     }
 
+
     private static String getAddress(final Context context) {
         final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-//        final AddressListener locationListener = new AddressListener(context);
+//        final android.location.LocationListener locationListener = new TubelessLocationListener(context);
+//
 //        new Thread() {
 //            @Override
 //            public void run() {
@@ -92,19 +98,25 @@ public class RadyabBusiness {
 //                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 //                    return;
 //                }
-//                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 10, locationListener);
+//                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
 //                Looper.loop();
 //            }
 //        }.start();
 
 
+//        final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
         try {
             if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 return null;
             }
+
+
+
             Location aaaaa = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             String fullAddress = null;
-            List<Address> addresses = null;
+            Geocoder gcd = new Geocoder(context, Locale.getDefault());
+            List<Address> addresses = gcd.getFromLocation(aaaaa.getLatitude(), aaaaa.getLongitude(), 1);
+
             if (addresses.size() > 0) {
                 System.out.println(addresses.get(0).getLocality());
                 String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
@@ -130,16 +142,15 @@ public class RadyabBusiness {
     }
 
 
-    public String createResponseJson(Location location) {
+    public String createResponseJson( Context mContext,Location location) {
         Global.setting = DatabaseUtils.loadSetting(mContext);
-
 
         Gson gson = new Gson();
         ResponseToken responseToken = new ResponseToken();
         responseToken.setType(10);
         responseToken.setSlavePushNotificationToken(Global.setting.getSlavePushNotificationToken());
         responseToken.serverStatus.setCode(0);
-        responseToken.serverStatus.setMessage("ok");
+        responseToken.serverStatus.setMessage(location.toString());
         PushObject pushObject = new PushObject();
         pushObject.setTo(Global.setting.getMasterPushNotificationToken());
         pushObject.data.setMessage(gson.toJson(responseToken));//responseToken
@@ -153,12 +164,31 @@ public class RadyabBusiness {
         a++;
 
         return json;
-
-        return "";
     }
 
-    public String createResponseJson(String address) {
+    public String createResponseJson( Context mContext,String address) {
+//        Global.setting = DatabaseUtils.loadSetting(mContext);
 
-        return "";
+        Gson gson = new Gson();
+        ResponseToken responseToken = new ResponseToken();
+        responseToken.setType(10);
+        responseToken.setSlavePushNotificationToken(Global.setting.getSlavePushNotificationToken());
+        responseToken.serverStatus.setCode(0);
+        responseToken.serverStatus.setMessage(address.toString());
+        PushObject pushObject = new PushObject();
+        //TODO master token
+//        pushObject.setTo(Global.setting.getMasterPushNotificationToken());
+        pushObject.setTo("czuvcycXdOs:APA91bGowemr3BCJaKSeCWQ6-a18oHwGHd4Y7hMY5lzSCa2Scb7W5SRJk-JzFS6wuurPi8KmmspuB6x8qAGl_LJA-3DjSiZBuFasg8cKpMzs81fvjVZKgWrIM5rXBoOLcIMHTSXzqAaD");
+        pushObject.data.setMessage(gson.toJson(responseToken));//responseToken
+
+        String json = gson.toJson(pushObject);
+
+
+        String sssssssss =  "{\"to\": \""+ Global.setting.masterPushNotificationToken +"\",\"data\": {\"message\": \""+ "json----" +Global.setting.getSlavePushNotificationToken()+ "----json" +"\"}}";
+
+        int a = 5 ;
+        a++;
+
+        return json;
     }
 }
