@@ -4,17 +4,15 @@ package ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotifica
  * Created by sajjad on 5/17/2018.
  */
 
-public class PushData {
-    String message;
+public class PushDataJson {
+    MessageGetService message;
 
-
-    public String getMessage() {
+    public MessageGetService getMessage() {
         return message;
     }
 
-    public void setMessage(String message) {
+    public void setMessage(MessageGetService message) {
         this.message = message;
     }
-
 
 }

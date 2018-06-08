@@ -4,13 +4,13 @@ import android.content.Context;
 
 import com.google.gson.Gson;
 
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.asyncTask.ReplyServiceRequestAsyncTask;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.Global;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.activity.waitForRegister;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotification.PushObject;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.ResponseToken;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.networkLayout.asyncTask.replyAsyncTask;
 
 /**
  * Created by sajjad on 5/3/2018.
@@ -26,7 +26,7 @@ public class RegisterBusiness {
 
         if (checkMessageRandomCode(message))
             if (DatabaseUtils.saveMasterToken(context, message.substring(8), sender)) {
-                (new replyAsyncTask(context)).execute();
+                (new ReplyServiceRequestAsyncTask(context,0,"")).execute();
             }
     }
 

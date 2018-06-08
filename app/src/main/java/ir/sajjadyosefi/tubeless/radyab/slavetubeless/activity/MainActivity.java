@@ -13,7 +13,6 @@ import android.widget.Toast;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.R;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.networkLayout.asyncTask.replyAsyncTask;
 
 public class MainActivity extends AppCompatActivity {
 

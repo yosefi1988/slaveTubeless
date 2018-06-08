@@ -6,11 +6,11 @@ package ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotifica
 
 public class PushObject {
 
-    public PushData data ;
+    public PushDataString data ;
     public String to ;
 
     public PushObject() {
-        data = new PushData();
+        data = new PushDataString();
     }
 
     public String getTo() {
@@ -22,11 +22,11 @@ public class PushObject {
     }
 
 
-    public PushData getData() {
+    public PushDataString getData() {
         return data;
     }
 
-    public void setData(PushData data) {
+    public void setData(PushDataString data) {
         this.data = data;
     }
 

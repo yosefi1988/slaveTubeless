@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
@@ -14,40 +16,36 @@ import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.j256.ormlite.android.apptools.OpenHelperManager;
-import com.j256.ormlite.dao.Dao;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.Global;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.RegisterBusiness;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseHelper;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.Sensors.AddressListener;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.GooglePushResponse;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.networkLayout.HttpUtils;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.networkLayout.asyncTask.replyAsyncTask;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.utility.RandomUtil;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.R;
+
+import static ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.RadyabBusiness.handleNotifications;
 
 public class waitForRegister extends AppCompatActivity {
 
     public static Long generateCode;
     Context context;
+    public static TextView textViewGeo ;
 
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
         switch (requestCode) {
             case 9001:
-                if ((grantResults.length > 0) ){
-                    if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
+                if ((grantResults.length > 0)) {
+                    if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                         myOnStart();
-                    }else {
+                    } else {
                         //Toast.makeText(context,context.getString(R.string.WeNeedYourDeviceInfo),Toast.LENGTH_LONG).show();
                     }
-                }else {
+                } else {
 
                 }
                 break;
@@ -56,6 +54,7 @@ public class waitForRegister extends AppCompatActivity {
                 break;
         }
     }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -66,22 +65,33 @@ public class waitForRegister extends AppCompatActivity {
         checkTakedToken();
         context = this;
 
+
+        //1
 //        Handler handler = new Handler(Looper.getMainLooper());
 //        handler.post(new Runnable() {
 //            public void run() {
 //
 //            }
 //        });
-        if(isNetworkOnline(context)){
-            Runnable runnable = new Runnable() {
-                public void run() {
-                    String test = "{\"data\":{\"message\":\"{\\\"Type\\\":10,\\\"slavePushNotificationToken\\\":\\\"eNWUjDiHF4o:APA91bETNGt4slw7HSPODtvfmQHJkyiyBwRciJZ5wh63m7QKllxIi3qYUSeAt4yCo7kBetn7wdS_hSr2Wh40jX9Vc_OAp-rjnWMFc1h1Ci2zB9pYRv6prkFCpjOEosW4AQzWQUROtvRF\\\",\\\"serverStatus\\\":{\\\"Code\\\":0,\\\"Message\\\":\\\"ok\\\"}}\"},\"to\":\"crvdz6-gZYg:APA91bEtFQEg2SANboccxaH-VV0P-DZQPJiTdEE4QKE2GX12eZCbnynAjNkGIAM-6uPJSdiTKSXgE16huP28_mKK-Pyieze7VKc7hmvDSvwffX-9n4NxEC_eMvg5P4bd_GW5mvDsSBZo\"}";
-                    HttpUtils.PostRequestToFCM(context,test, GooglePushResponse.class);
-                }
-            };
-            Thread mythread = new Thread(runnable);
-            mythread.start();
-        }
+
+        //2
+//        if(isNetworkOnline(context)){
+//            Runnable runnable = new Runnable() {
+//                public void run() {
+//                    String test = "{\"data\":{\"message\":\"{\\\"Type\\\":10,\\\"slavePushNotificationToken\\\":\\\"cCsKB7bj7h4:APA91bFJIMZvptnp9DGZdAdFyAfPvRZ96AtXfVakvc4MHuEXl8gqtXB07LI6soUq-hKRSc2up5R_5W195gjom7sIL2zVSmfSrn-W2FPfc1Let15cyEe3hJLreyQY6ak-lM1URxVxymCe\\\",\\\"serverStatus\\\":{\\\"Code\\\":0,\\\"MessageGetService\\\":\\\"ok\\\"}}\"},\"to\":\"czuvcycXdOs:APA91bGowemr3BCJaKSeCWQ6-a18oHwGHd4Y7hMY5lzSCa2Scb7W5SRJk-JzFS6wuurPi8KmmspuB6x8qAGl_LJA-3DjSiZBuFasg8cKpMzs81fvjVZKgWrIM5rXBoOLcIMHTSXzqAaD\"}";
+//                    HttpUtils.PostRequestToFCM(context,test, GooglePushResponse.class);
+//                }
+//            };
+//            Thread mythread = new Thread(runnable);
+//            mythread.start();
+//        }
+//
+
+        textViewGeo = (TextView) findViewById(R.id.textViewGeo);
+        //3
+        String sssssssssss = "{message={\"ServiceType\":3}}";
+        handleNotifications(getApplicationContext(),sssssssssss);
+
 
 
 
@@ -89,10 +99,12 @@ public class waitForRegister extends AppCompatActivity {
         int permissionReadCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_SMS);
         int permissionReadCheck2 = ContextCompat.checkSelfPermission(this, Manifest.permission.INTERNET);
         int permissionReadCheck3 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE);
+        int permissionReadCheck4 = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
 
         if (permissionCheck != PackageManager.PERMISSION_GRANTED &&
                 permissionReadCheck != PackageManager.PERMISSION_GRANTED &&
                 permissionReadCheck2 != PackageManager.PERMISSION_GRANTED  &&
+                permissionReadCheck4 != PackageManager.PERMISSION_GRANTED  &&
                 permissionReadCheck3 != PackageManager.PERMISSION_GRANTED  ) {
             ActivityCompat.requestPermissions(((Activity)this),
                     new String[]{
@@ -100,6 +112,7 @@ public class waitForRegister extends AppCompatActivity {
                             android.Manifest.permission.READ_SMS,
                             android.Manifest.permission.INTERNET,
                             android.Manifest.permission.ACCESS_NETWORK_STATE,
+                            android.Manifest.permission.ACCESS_FINE_LOCATION,
                     },
                     9001);
         } else {
