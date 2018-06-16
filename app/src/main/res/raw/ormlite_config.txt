@@ -1,5 +1,5 @@
 #
-# generated on 2018/06/13 01:14:54
+# generated on 2018/06/16 08:47:30
 #
 # --table-start--
 dataClass=ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.Setting

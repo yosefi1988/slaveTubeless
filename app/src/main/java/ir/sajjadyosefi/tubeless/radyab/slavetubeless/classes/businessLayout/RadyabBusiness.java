@@ -7,8 +7,10 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationManager;
+import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
 
@@ -16,13 +18,15 @@ import java.util.List;
 import java.util.Locale;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.Global;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.Sensors.TubelessLocationListener;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.Sensors.AddressListener;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.asyncTask.ReplyServiceRequestAsyncTask;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotification.PushDataJson;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotification.PushObject;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.ResponseToken;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.services.RequestService;
+
+import static android.content.Context.LOCATION_SERVICE;
 
 /**
  * Created by sajjad on 5/1/2018.
@@ -32,6 +36,8 @@ public class RadyabBusiness {
     public static final int TYPE_TOKEN = 10;
 
     public static String TMP = null;
+    static LocationManager mLocationManager;
+    static Location myLocation = null;
 
     public static void handleNotifications(final Context context, String data) {
         PushDataJson pushData = new PushDataJson();
@@ -40,15 +46,10 @@ public class RadyabBusiness {
         pushData = gson.fromJson(data, PushDataJson.class);
 
         if (pushData.getMessage().getServiceType() == RequestService.SERVICE_GEO) {
-            Location loc = getLastGeo(context);
-            ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context,RequestService.SERVICE_ADDRESS,loc);
-            replyServiceRequestAsyncTask.execute();
+            getLastGeo(context);
         }
         if (pushData.getMessage().getServiceType() == RequestService.SERVICE_ADDRESS) {
-            String address = getAddress(context);
-            ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context,RequestService.SERVICE_ADDRESS,address);
-            replyServiceRequestAsyncTask.execute();
-
+            getLastAddress(context);
         } else if (pushData.getMessage().getServiceType() == RequestService.BATTERY_LEVEL) {
 
         }
@@ -60,62 +61,47 @@ public class RadyabBusiness {
         a++;
     }
 
-//    private static Location getGeo(final Context context) {
-//        final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-//        final android.location.LocationListener locationListener = new TubelessLocationListener(context);
-//
-//        new Thread() {
-//            @Override
-//            public void run() {
-//                Looper.prepare();
-//                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                    return;
-//                }
-//                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
-//                Looper.loop();
-//            }
-//        }.start();
-//    }
-
-    private static Location getLastGeo(final Context context) {
-        final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return null;
-        }
-        Location aaaaa = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        return aaaaa;
+    private static void getLastAddress(final Context context) {
+        final LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,new AddressListener(context));
+                Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+//                Toast.makeText(context, getAddress(context,location) , Toast.LENGTH_LONG).show();
+                String address = getAddress(context,location);
+                ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, RequestService.SERVICE_ADDRESS, address);
+                replyServiceRequestAsyncTask.execute();
+            }
+        });
+    }
+    private static void getLastGeo(final Context context) {
+        final LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                    return;
+                }
+                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,new AddressListener(context));
+                Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+                ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, RequestService.SERVICE_GEO, location);
+                replyServiceRequestAsyncTask.execute();
+            }
+        });
     }
 
 
-    private static String getAddress(final Context context) {
-        final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-//        final android.location.LocationListener locationListener = new TubelessLocationListener(context);
-//
-//        new Thread() {
-//            @Override
-//            public void run() {
-//                Looper.prepare();
-//                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-//                    return;
-//                }
-//                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, locationListener);
-//                Looper.loop();
-//            }
-//        }.start();
-
-
-//        final LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+    private static String getAddress(final Context context,Location location) {
         try {
-            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                return null;
-            }
-
-
-
-            Location aaaaa = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
             String fullAddress = null;
             Geocoder gcd = new Geocoder(context, Locale.getDefault());
-            List<Address> addresses = gcd.getFromLocation(aaaaa.getLatitude(), aaaaa.getLongitude(), 1);
+            List<Address> addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
 
             if (addresses.size() > 0) {
                 System.out.println(addresses.get(0).getLocality());
@@ -131,50 +117,53 @@ public class RadyabBusiness {
                                 " state : " + state +
                                 " country : " + country +
                                 " postalCode : " + postalCode +
-                                " knownName : " + knownName ;
+                                " knownName : " + knownName;
             }
             String s = "My Current City is: " + fullAddress;
 
             return s;
-        }catch (Exception e) {
+        } catch (Exception e) {
             return null;
         }
     }
 
 
-    public String createResponseJson( Context mContext,Location location) {
-        Global.setting = DatabaseUtils.loadSetting(mContext);
-
-        Gson gson = new Gson();
-        ResponseToken responseToken = new ResponseToken();
-        responseToken.setType(10);
-        responseToken.setSlavePushNotificationToken(Global.setting.getSlavePushNotificationToken());
-        responseToken.serverStatus.setCode(0);
-        responseToken.serverStatus.setMessage(location.toString());
-        PushObject pushObject = new PushObject();
-        pushObject.setTo(Global.setting.getMasterPushNotificationToken());
-        pushObject.data.setMessage(gson.toJson(responseToken));//responseToken
-
-        String json = gson.toJson(pushObject);
 
 
-        String sssssssss =  "{\"to\": \""+ Global.setting.masterPushNotificationToken +"\",\"data\": {\"message\": \""+ "json----" +Global.setting.getSlavePushNotificationToken()+ "----json" +"\"}}";
+    public static Location getLastKnownLocation(Context context) {
 
-        int a = 5 ;
-        a++;
 
-        return json;
+        mLocationManager = (LocationManager) context.getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = mLocationManager.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return null;
+            }
+            Location l = mLocationManager.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                // Found best last known location: %s", l);
+                bestLocation = l;
+            }
+        }
+        return bestLocation;
     }
 
-    public String createResponseJson( Context mContext,String address) {
+
+    public String createResponseJsonADDRESS(int type, String address) {
 //        Global.setting = DatabaseUtils.loadSetting(mContext);
 
         Gson gson = new Gson();
+
         ResponseToken responseToken = new ResponseToken();
-        responseToken.setType(10);
-        responseToken.setSlavePushNotificationToken(Global.setting.getSlavePushNotificationToken());
-        responseToken.serverStatus.setCode(0);
+        responseToken.setType(type);
+//        responseToken.setSlavePushNotificationToken(Global.setting.getSlavePushNotificationToken());
+//        responseToken.serverStatus.setCode(0);
         responseToken.serverStatus.setMessage(address.toString());
+
         PushObject pushObject = new PushObject();
         //TODO master token
 //        pushObject.setTo(Global.setting.getMasterPushNotificationToken());
@@ -183,12 +172,33 @@ public class RadyabBusiness {
 
         String json = gson.toJson(pushObject);
 
-
-        String sssssssss =  "{\"to\": \""+ Global.setting.masterPushNotificationToken +"\",\"data\": {\"message\": \""+ "json----" +Global.setting.getSlavePushNotificationToken()+ "----json" +"\"}}";
-
         int a = 5 ;
         a++;
 
         return json;
     }
+
+    public String createResponseJsonGEO(int type, Location location) {
+
+        Gson gson = new Gson();
+
+        ResponseToken responseToken = new ResponseToken();
+        responseToken.setType(type);
+//        responseToken.setSlavePushNotificationToken(Global.setting.getSlavePushNotificationToken());
+//        responseToken.serverStatus.setCode(0);
+        responseToken.serverStatus.setMessage(location.toString());
+
+        PushObject pushObject = new PushObject();
+        pushObject.setTo(Global.setting.getMasterPushNotificationToken());
+        pushObject.setTo("czuvcycXdOs:APA91bGowemr3BCJaKSeCWQ6-a18oHwGHd4Y7hMY5lzSCa2Scb7W5SRJk-JzFS6wuurPi8KmmspuB6x8qAGl_LJA-3DjSiZBuFasg8cKpMzs81fvjVZKgWrIM5rXBoOLcIMHTSXzqAaD");
+
+        pushObject.data.setMessage(gson.toJson(responseToken));//responseToken
+        String json = gson.toJson(pushObject);
+        String sssssssss = "{\"to\": \"" + Global.setting.masterPushNotificationToken + "\",\"data\": {\"message\": \"" + "json----" + Global.setting.getSlavePushNotificationToken() + "----json" + "\"}}";
+        int a = 5;
+        a++;
+
+        return json;
+    }
+
 }

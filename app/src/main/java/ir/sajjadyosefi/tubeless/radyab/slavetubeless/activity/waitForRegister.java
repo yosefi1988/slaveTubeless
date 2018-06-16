@@ -11,29 +11,41 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
+
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.Global;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.Sensors.AddressListener;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.RadyabBusiness;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.GooglePushResponse;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.networkLayout.HttpUtils;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.utility.RandomUtil;
-
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.R;
-
-import static ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.RadyabBusiness.handleNotifications;
 
 public class waitForRegister extends AppCompatActivity {
 
+    private static final String TAG = "ssssssssssss";
     public static Long generateCode;
     Context context;
-    public static TextView textViewGeo ;
+    public static TextView textViewGeo;
 
+
+    private GoogleApiClient mGoogleApiClient;
+    private Location mLocation;
+    private LocationManager locationManager;
+    private LocationRequest mLocationRequest;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -78,7 +90,7 @@ public class waitForRegister extends AppCompatActivity {
 //        if(isNetworkOnline(context)){
 //            Runnable runnable = new Runnable() {
 //                public void run() {
-//                    String test = "{\"data\":{\"message\":\"{\\\"Type\\\":10,\\\"slavePushNotificationToken\\\":\\\"eXzLMOaaupI:APA91bGXQu28OL3GRGvNi5c0s0X_In8rQjjufVUq8yHylsB_vGkc2I3V_PTThGDLfqXX3js29GUL2bbpfIJkMOBLPP3TAOu2A-PwdAevhxyplIQBGjcQ5IGUKcdlI8DA3OA-NkN1-URw\\\",\\\"serverStatus\\\":{\\\"Code\\\":0,\\\"MessageGetService\\\":\\\"ok\\\"}}\"},\"to\":\"czuvcycXdOs:APA91bGowemr3BCJaKSeCWQ6-a18oHwGHd4Y7hMY5lzSCa2Scb7W5SRJk-JzFS6wuurPi8KmmspuB6x8qAGl_LJA-3DjSiZBuFasg8cKpMzs81fvjVZKgWrIM5rXBoOLcIMHTSXzqAaD\"}";
+//                    String test = "{\"data\":{\"message\":\"{\\\"Type\\\":10,\\\"slavePushNotificationToken\\\":\\\"fmLBaa_8Bjo:APA91bH1BCVnEYyI-AboyxeZKkcEsRmO5opA_EZa6SjTy9Crw-IRCi8JZ5z_iR7pMZ7B_3IByEFrhumfQXm45bFW0-KdJGr_fpzv2buHidwycSCn99xWCXyuI01XdgDR6KyDmYzpiIJA\\\",\\\"serverStatus\\\":{\\\"Code\\\":0,\\\"MessageGetService\\\":\\\"ok\\\"}}\"},\"to\":\"czuvcycXdOs:APA91bGowemr3BCJaKSeCWQ6-a18oHwGHd4Y7hMY5lzSCa2Scb7W5SRJk-JzFS6wuurPi8KmmspuB6x8qAGl_LJA-3DjSiZBuFasg8cKpMzs81fvjVZKgWrIM5rXBoOLcIMHTSXzqAaD\"}";
 //                    HttpUtils.PostRequestToFCM(context,test, GooglePushResponse.class);
 //                }
 //            };
@@ -91,6 +103,10 @@ public class waitForRegister extends AppCompatActivity {
         //3
 //        String sssssssssss = "{message={\"ServiceType\":3}}";//1
 //        handleNotifications(getApplicationContext(),sssssssssss);
+
+
+
+
 
 
 
@@ -194,4 +210,6 @@ public class waitForRegister extends AppCompatActivity {
 
         return status;
     }
+
+
 }

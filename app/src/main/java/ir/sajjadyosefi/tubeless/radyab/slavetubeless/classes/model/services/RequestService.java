@@ -10,6 +10,10 @@ public class RequestService {
     public static final int SERVICE_GEO       = 1;
     public static final int BATTERY_LEVEL     = 2;
 
+
+    public static final int Reserve          = 10;
+
+
     int ServiceType ;
 
 

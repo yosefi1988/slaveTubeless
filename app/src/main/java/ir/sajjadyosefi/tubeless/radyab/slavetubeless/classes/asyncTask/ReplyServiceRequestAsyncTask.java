@@ -8,6 +8,7 @@ import android.widget.Toast;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.Global;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.RadyabBusiness;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.RegisterBusiness;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.Sms;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.BasicObject;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.GooglePushResponse;
@@ -34,7 +35,7 @@ public class ReplyServiceRequestAsyncTask extends AsyncTask {
         this.address = address;
     }
 
-    public ReplyServiceRequestAsyncTask(Context context, int serviceAddress, Location loc) {
+    public ReplyServiceRequestAsyncTask(Context mContext, int serviceAddress, Location loc) {
         this.mContext = mContext;
         this.serviceType = serviceAddress;
         this.location = loc;
@@ -49,9 +50,10 @@ public class ReplyServiceRequestAsyncTask extends AsyncTask {
         }else {
             RadyabBusiness radyabBusiness = new RadyabBusiness();
             if (serviceType == RequestService.SERVICE_GEO) {
-                messageToResoinse = radyabBusiness.createResponseJson(mContext, location);
+                Global.setting = DatabaseUtils.loadSetting(mContext);
+                messageToResoinse = radyabBusiness.createResponseJsonGEO(serviceType, location);
             } else if (serviceType == RequestService.SERVICE_ADDRESS) {
-                messageToResoinse = radyabBusiness.createResponseJson(mContext, address);
+                messageToResoinse = radyabBusiness.createResponseJsonADDRESS(serviceType, address);
             }
         }
     }
