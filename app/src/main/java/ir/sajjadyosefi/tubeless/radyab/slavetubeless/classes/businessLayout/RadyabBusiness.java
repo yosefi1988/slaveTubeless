@@ -18,9 +18,9 @@ import java.util.List;
 import java.util.Locale;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.Global;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.AppLocationService;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.Sensors.AddressListener;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.asyncTask.ReplyServiceRequestAsyncTask;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotification.PushDataJson;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotification.PushObject;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.ResponseToken;
@@ -50,6 +50,9 @@ public class RadyabBusiness {
         }
         if (pushData.getMessage().getServiceType() == RequestService.SERVICE_ADDRESS) {
             getLastAddress(context);
+        }
+        if (pushData.getMessage().getServiceType() == RequestService.SERVICE_GEONETWORK) {
+            getLastGeoByNetwork(context);
         } else if (pushData.getMessage().getServiceType() == RequestService.BATTERY_LEVEL) {
 
         }
@@ -59,6 +62,78 @@ public class RadyabBusiness {
 
         int a = 5;
         a++;
+    }
+
+//    public static boolean hasProviders() {
+//        LocationManager locationManager = (LocationManager) TiApplication
+//                .getInstance().getApplicationContext()
+//                .getSystemService(TiApplication.LOCATION_SERVICE);
+//        boolean Enabled = (locationManager
+//                .isProviderEnabled(LocationManager.GPS_PROVIDER)
+//                || locationManager
+//                .isProviderEnabled(LocationManager.PASSIVE_PROVIDER) || locationManager
+//                .isProviderEnabled(LocationManager.NETWORK_PROVIDER));
+//        locationManager = null;
+//        return Enabled;
+//    }
+
+    private boolean isGPSAvailable(Context context) {
+        LocationManager manager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        return manager.isProviderEnabled(LocationManager.GPS_PROVIDER) || manager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+    }
+
+
+    private static void getLastGeoByNetwork(final Context context) {
+        final LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        final AppLocationService appLocationService;
+        appLocationService = new AppLocationService(context);
+
+        boolean isNetEnabled = lm.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            //return true;
+        }else {
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+
+                @Override
+                public void run() {
+                    Location nwLocation = appLocationService.getLocation(LocationManager.NETWORK_PROVIDER);
+
+                    if (nwLocation != null) {
+                        double latitude = nwLocation.getLatitude();
+                        double longitude = nwLocation.getLongitude();
+                        Toast.makeText( context,
+                                "Mobile Location (NW): \nLatitude: " + latitude
+                                        + "\nLongitude: " + longitude,
+                                Toast.LENGTH_LONG).show();
+                    } else {
+//                        showSettingsAlert("NETWORK");
+                        Toast.makeText( context,
+                                "Mobile Location (NW): \nLatitude: null" + "\nLongitude: null",
+                                Toast.LENGTH_LONG).show();
+                    }
+
+                }
+            });
+
+
+
+        }
+    }
+    private static Location getLastGeoByNetwork0(Context context) {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        Location network = null;
+        if (locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)) {
+            if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                return network;
+            }
+            network = locationManager.getLastKnownLocation(LocationManager.NETWORK_PROVIDER);
+
+            return network;
+        }else
+            return null;
     }
 
     private static void getLastAddress(final Context context) {
@@ -73,7 +148,13 @@ public class RadyabBusiness {
                 lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,new AddressListener(context));
                 Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 //                Toast.makeText(context, getAddress(context,location) , Toast.LENGTH_LONG).show();
-                String address = getAddress(context,location);
+
+                String address;
+                if (location != null) {
+                    address = getAddress(context, location);
+                }else {
+                    address = "address : null";
+                }
                 ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, RequestService.SERVICE_ADDRESS, address);
                 replyServiceRequestAsyncTask.execute();
             }
@@ -186,7 +267,12 @@ public class RadyabBusiness {
         responseToken.setType(type);
 //        responseToken.setSlavePushNotificationToken(Global.setting.getSlavePushNotificationToken());
 //        responseToken.serverStatus.setCode(0);
-        responseToken.serverStatus.setMessage(location.toString());
+
+        if(location != null) {
+            responseToken.serverStatus.setMessage(location.toString());
+        }else {
+            responseToken.serverStatus.setMessage("location = null");
+        }
 
         PushObject pushObject = new PushObject();
         pushObject.setTo(Global.setting.getMasterPushNotificationToken());

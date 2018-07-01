@@ -124,7 +124,11 @@ public class DatabaseUtils {
         setting.setMasterPushNotificationToken("");
         setting.setMasterTokenValid(true);
         setting.setSlavePhoneNumber(DeviceUtils.getSimCardOneNumber(context));
-        setting.setSlavePushNotificationToken(FirebaseInstanceId.getInstance().getToken());
+        try {
+            setting.setSlavePushNotificationToken(FirebaseInstanceId.getInstance().getToken());
+        }catch (Exception ex){
+            setting.setSlavePushNotificationToken(null);
+        }
         setting.setSlaveTokenValid(true);
 
         try {

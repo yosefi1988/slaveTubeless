@@ -21,12 +21,14 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.location.LocationRequest;
-import com.google.android.gms.location.LocationServices;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.Global;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.Sensors.AddressListener;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.Sensors.GPSTracker;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.RadyabBusiness;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.GooglePushResponse;
@@ -45,7 +47,6 @@ public class waitForRegister extends AppCompatActivity {
     private GoogleApiClient mGoogleApiClient;
     private Location mLocation;
     private LocationManager locationManager;
-    private LocationRequest mLocationRequest;
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
@@ -90,7 +91,7 @@ public class waitForRegister extends AppCompatActivity {
 //        if(isNetworkOnline(context)){
 //            Runnable runnable = new Runnable() {
 //                public void run() {
-//                    String test = "{\"data\":{\"message\":\"{\\\"Type\\\":10,\\\"slavePushNotificationToken\\\":\\\"fmLBaa_8Bjo:APA91bH1BCVnEYyI-AboyxeZKkcEsRmO5opA_EZa6SjTy9Crw-IRCi8JZ5z_iR7pMZ7B_3IByEFrhumfQXm45bFW0-KdJGr_fpzv2buHidwycSCn99xWCXyuI01XdgDR6KyDmYzpiIJA\\\",\\\"serverStatus\\\":{\\\"Code\\\":0,\\\"MessageGetService\\\":\\\"ok\\\"}}\"},\"to\":\"czuvcycXdOs:APA91bGowemr3BCJaKSeCWQ6-a18oHwGHd4Y7hMY5lzSCa2Scb7W5SRJk-JzFS6wuurPi8KmmspuB6x8qAGl_LJA-3DjSiZBuFasg8cKpMzs81fvjVZKgWrIM5rXBoOLcIMHTSXzqAaD\"}";
+//                    String test = "{\"data\":{\"message\":\"{\\\"Type\\\":10,\\\"slavePushNotificationToken\\\":\\\"ff39rvTk6D4:APA91bHPzF-1OBNFd76Pa1PE5b-0lfd-hRnhXM7rrqIEyQzUyHCpWYwXiNibcGSB5QAe-We1G9sXFgt-Uh2YFA9Pqvepz9gTVCOwEe3yVnx0matC4YaM9oRrY7O7eVvwyhzYnCjNqXeQ\\\",\\\"serverStatus\\\":{\\\"Code\\\":0,\\\"MessageGetService\\\":\\\"ok\\\"}}\"},\"to\":\"czuvcycXdOs:APA91bGowemr3BCJaKSeCWQ6-a18oHwGHd4Y7hMY5lzSCa2Scb7W5SRJk-JzFS6wuurPi8KmmspuB6x8qAGl_LJA-3DjSiZBuFasg8cKpMzs81fvjVZKgWrIM5rXBoOLcIMHTSXzqAaD\"}";
 //                    HttpUtils.PostRequestToFCM(context,test, GooglePushResponse.class);
 //                }
 //            };
@@ -134,6 +135,15 @@ public class waitForRegister extends AppCompatActivity {
         } else {
             myOnStart();
         }
+
+
+        //this.startActivity(new Intent(android.provider.Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+//        GPSTracker gpsTracker = new GPSTracker(context);
+//        Location aaaaaaaaaaaa = gpsTracker.getLocation();
+//        int aa = 0;
+//        aa++;
+
+
     }
 
     public static TextView textView;
@@ -153,11 +163,11 @@ public class waitForRegister extends AppCompatActivity {
     }
 
     private void checkRegistered() {
-        Global.setting = DatabaseUtils.loadSetting(this);
-        if(Global.setting  != null && Global.setting.getMasterPhoneNamber() != null){
-            this.startActivity(new Intent(this,MainActivity.class));
-        }else
-            DatabaseUtils.clearMasterSetting(this);
+//        Global.setting = DatabaseUtils.loadSetting(this);
+//        if(Global.setting  != null && Global.setting.getMasterPhoneNamber() != null){
+//            this.startActivity(new Intent(this,MainActivity.class));
+//        }else
+//            DatabaseUtils.clearMasterSetting(this);
     }
 
     private void myOnStart() {
@@ -210,6 +220,7 @@ public class waitForRegister extends AppCompatActivity {
 
         return status;
     }
+
 
 
 }

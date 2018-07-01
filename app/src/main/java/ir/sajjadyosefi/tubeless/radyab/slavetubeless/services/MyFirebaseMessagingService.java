@@ -14,7 +14,7 @@ import static ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayo
  * Created by sajjad on 12/5/2017.
  */
 
-public class GCMNotificationIntentService extends FirebaseMessagingService {
+public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     @Override
     public void onMessageReceived(final RemoteMessage remoteMessage) {
@@ -34,7 +34,7 @@ public class GCMNotificationIntentService extends FirebaseMessagingService {
 
             @Override
             public void run() {
-                Toast.makeText(GCMNotificationIntentService.this.getApplicationContext(),
+                Toast.makeText(MyFirebaseMessagingService.this.getApplicationContext(),
                         remoteMessage.getData().toString()
                         ,Toast.LENGTH_SHORT).show();
             }

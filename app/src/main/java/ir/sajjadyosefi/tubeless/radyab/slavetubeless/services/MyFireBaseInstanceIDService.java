@@ -17,7 +17,7 @@ import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.Data
  * Created by sajjad on 12/5/2017.
  */
 
-public class MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
+public class  MyFireBaseInstanceIDService extends FirebaseInstanceIdService {
 
 
     private static final String TAG = MyFireBaseInstanceIDService.class.getSimpleName();
