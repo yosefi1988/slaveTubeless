@@ -31,7 +31,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         Handler handler = new Handler(Looper.getMainLooper());
         handler.post(new Runnable() {
-
             @Override
             public void run() {
                 Toast.makeText(MyFirebaseMessagingService.this.getApplicationContext(),

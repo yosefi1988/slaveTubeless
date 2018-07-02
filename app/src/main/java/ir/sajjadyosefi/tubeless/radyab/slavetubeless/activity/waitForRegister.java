@@ -91,7 +91,7 @@ public class waitForRegister extends AppCompatActivity {
 //        if(isNetworkOnline(context)){
 //            Runnable runnable = new Runnable() {
 //                public void run() {
-//                    String test = "{\"data\":{\"message\":\"{\\\"Type\\\":10,\\\"slavePushNotificationToken\\\":\\\"ff39rvTk6D4:APA91bHPzF-1OBNFd76Pa1PE5b-0lfd-hRnhXM7rrqIEyQzUyHCpWYwXiNibcGSB5QAe-We1G9sXFgt-Uh2YFA9Pqvepz9gTVCOwEe3yVnx0matC4YaM9oRrY7O7eVvwyhzYnCjNqXeQ\\\",\\\"serverStatus\\\":{\\\"Code\\\":0,\\\"MessageGetService\\\":\\\"ok\\\"}}\"},\"to\":\"czuvcycXdOs:APA91bGowemr3BCJaKSeCWQ6-a18oHwGHd4Y7hMY5lzSCa2Scb7W5SRJk-JzFS6wuurPi8KmmspuB6x8qAGl_LJA-3DjSiZBuFasg8cKpMzs81fvjVZKgWrIM5rXBoOLcIMHTSXzqAaD\"}";
+//                    String test = "{\"data\":{\"message\":\"{\\\"Type\\\":10,\\\"slavePushNotificationToken\\\":\\\"d4pzpJarggQ:APA91bGhBmVtXFo7SukqbC26Cjfd0ZHK7Wji_unzSSpk9-pStTK5sll3fdLrQrOOUabcn6PqQP1MDgE0aANZp8v2pUWaI-BVLGbVzNYJWF6pS3Js8YNb-VAkIFqT1OOGIRoVvILJkhCG25KGv_-B6sR3qLmPKrnwCg\\\",\\\"serverStatus\\\":{\\\"Code\\\":0,\\\"MessageGetService\\\":\\\"ok\\\"}}\"},\"to\":\"d4pzpJarggQ:APA91bGhBmVtXFo7SukqbC26Cjfd0ZHK7Wji_unzSSpk9-pStTK5sll3fdLrQrOOUabcn6PqQP1MDgE0aANZp8v2pUWaI-BVLGbVzNYJWF6pS3Js8YNb-VAkIFqT1OOGIRoVvILJkhCG25KGv_-B6sR3qLmPKrnwCg\"}";
 //                    HttpUtils.PostRequestToFCM(context,test, GooglePushResponse.class);
 //                }
 //            };

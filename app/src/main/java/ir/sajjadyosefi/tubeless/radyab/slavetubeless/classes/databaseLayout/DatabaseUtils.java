@@ -92,7 +92,7 @@ public class DatabaseUtils {
             settingDao = getHelper(context).getTeacherDao();
             UpdateBuilder<Setting, Integer> updateBuilder = settingDao.updateBuilder();
             //updateBuilder.where().eq("Id", 1);
-            updateBuilder.updateColumnValue("masterPushNotificationToken" /* column */, masterToken /* value */);
+            updateBuilder.updateColumnValue("masterPushNotificationToken" /* column */, masterToken.substring(2) /* value */);
             updateBuilder.updateColumnValue("masterPhoneNamber" /* column */, sender /* value */);
             updateBuilder.updateColumnValue("isMasterTokenValid" /* column */, true /* value */);
             updateBuilder.update();

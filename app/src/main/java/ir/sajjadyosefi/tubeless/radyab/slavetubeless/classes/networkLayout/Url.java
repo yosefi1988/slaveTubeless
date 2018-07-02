@@ -44,4 +44,7 @@ public class Url {
 
 
     public static final String POST_PUSH                               = "http://fcm.googleapis.com/fcm/send";
+
+    public static final String TUBELESS_FCM_KEY                        = "AAAAtXIvF3U:APA91bH1VrjfoNC1ZOjLhcXDTi8NlZAHZ2iiEkEOW_2wOa3zwipb8PLfTFU-7wS9F1Un18ALvqOYMYohRYKHx7FbdfPhYxQzgwXnold52dvWF7bwZyveMHCE8UF2sknnq-tQSwv4rWVk";
+
 }

@@ -24,6 +24,8 @@ import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.BasicOb
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.GooglePushResponse;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.other.JsonDateDeserializer;
 
+import static ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.networkLayout.Url.TUBELESS_FCM_KEY;
+
 
 /**
  * Created by sajjad on 7/16/2017.
@@ -42,7 +44,7 @@ import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.other.JsonDateDeser
             HttpURLConnection httpcon = (HttpURLConnection) ((new URL("https://fcm.googleapis.com/fcm/send").openConnection()));
             httpcon.setDoOutput(true);
             httpcon.setRequestProperty("Content-Type", "application/json");
-            httpcon.setRequestProperty ("Authorization", "key=AAAAtXIvF3U:APA91bH1VrjfoNC1ZOjLhcXDTi8NlZAHZ2iiEkEOW_2wOa3zwipb8PLfTFU-7wS9F1Un18ALvqOYMYohRYKHx7FbdfPhYxQzgwXnold52dvWF7bwZyveMHCE8UF2sknnq-tQSwv4rWVk");
+            httpcon.setRequestProperty ("Authorization", "key=" + TUBELESS_FCM_KEY);
 
             httpcon.setRequestMethod("POST");
             httpcon.connect();
@@ -108,7 +110,7 @@ import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.other.JsonDateDeser
                 httpConn.setInstanceFollowRedirects(true);
                 httpConn.setDoInput(true);
                 httpConn.setDoOutput(true);
-                httpConn.setRequestProperty ("Authorization", "key=AAAAtXIvF3U:APA91bH1VrjfoNC1ZOjLhcXDTi8NlZAHZ2iiEkEOW_2wOa3zwipb8PLfTFU-7wS9F1Un18ALvqOYMYohRYKHx7FbdfPhYxQzgwXnold52dvWF7bwZyveMHCE8UF2sknnq-tQSwv4rWVk");
+                httpConn.setRequestProperty ("Authorization", "key=" + TUBELESS_FCM_KEY);
                 httpConn.setRequestProperty("Content-Type", "application/json");
                 httpConn.setRequestMethod("POST");
             }

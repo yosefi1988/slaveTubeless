@@ -59,7 +59,7 @@ public class RegisterBusiness {
         responseToken.serverStatus.setMessage("ok");
         PushObject pushObject = new PushObject();
         pushObject.setTo(Global.setting.getMasterPushNotificationToken());
-        pushObject.setTo("czuvcycXdOs:APA91bGowemr3BCJaKSeCWQ6-a18oHwGHd4Y7hMY5lzSCa2Scb7W5SRJk-JzFS6wuurPi8KmmspuB6x8qAGl_LJA-3DjSiZBuFasg8cKpMzs81fvjVZKgWrIM5rXBoOLcIMHTSXzqAaD");
+        pushObject.setTo(Global.setting.getMasterPushNotificationToken());
 
         pushObject.data.setMessage(gson.toJson(responseToken));//responseToken
 

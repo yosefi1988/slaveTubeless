@@ -12,6 +12,9 @@ import android.os.Looper;
 import android.support.v4.app.ActivityCompat;
 import android.widget.Toast;
 
+import com.androidfung.geoip.IpApiService;
+import com.androidfung.geoip.ServicesManager;
+import com.androidfung.geoip.model.GeoIpResponseModel;
 import com.google.gson.Gson;
 
 import java.util.List;
@@ -23,8 +26,11 @@ import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.Sensors.AddressList
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.asyncTask.ReplyServiceRequestAsyncTask;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotification.PushDataJson;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotification.PushObject;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.ResponseGeo;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.ResponseToken;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.services.RequestService;
+import retrofit2.Call;
+import retrofit2.Callback;
 
 import static android.content.Context.LOCATION_SERVICE;
 
@@ -45,10 +51,12 @@ public class RadyabBusiness {
         Gson gson = new Gson();
         pushData = gson.fromJson(data, PushDataJson.class);
 
-        if (pushData.getMessage().getServiceType() == RequestService.SERVICE_GEO) {
+        //OK
+        if (pushData.getMessage().getServiceType() == RequestService.SERVICE_GEO_DEFAULT) {
             getLastGeo(context);
         }
-        if (pushData.getMessage().getServiceType() == RequestService.SERVICE_ADDRESS) {
+        //OK
+        if (pushData.getMessage().getServiceType() == RequestService.SERVICE_ADDRESS_DEFAULT) {
             getLastAddress(context);
         }
         if (pushData.getMessage().getServiceType() == RequestService.SERVICE_GEONETWORK) {
@@ -138,43 +146,155 @@ public class RadyabBusiness {
 
     private static void getLastAddress(final Context context) {
         final LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
-                }
-                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,new AddressListener(context));
-                Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-//                Toast.makeText(context, getAddress(context,location) , Toast.LENGTH_LONG).show();
+        if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
 
-                String address;
-                if (location != null) {
-                    address = getAddress(context, location);
-                }else {
-                    address = "address : null";
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+
+                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new AddressListener(context));
+                    final Location[] location = {lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)};
+
+                    //1
+                    //force location
+                    IpApiService ipApiService = ServicesManager.getGeoIpService();
+                    ipApiService.getGeoIp().enqueue(new Callback<GeoIpResponseModel>() {
+                        @Override
+                        public void onResponse(Call<GeoIpResponseModel> call, retrofit2.Response<GeoIpResponseModel> response) {
+                            String country = response.body().getCountry();
+                            String city = response.body().getCity();
+                            String countryCode = response.body().getCountryCode();
+                            double latitude = response.body().getLatitude();
+                            double longtidue = response.body().getLongitude();
+                            String region = response.body().getRegion();
+                            String timezone = response.body().getTimezone();
+                            String isp = response.body().getIsp();
+
+                            location[0] = new Location("Auto");
+
+                            location[0].setLatitude(latitude);
+                            location[0].setLongitude(longtidue);
+
+
+                            String address;
+                            if (location != null) {
+                                //address = getAddress(context, location[0]);
+
+                                address =
+                                        "country : " + country +
+                                                " (countryCode : " + countryCode + ")"+
+                                                " (timezone : " + timezone + ")"+
+                                                " city : " + city +
+                                                //" state : " + state +
+                                                " region : " + region +
+                                                " isp : " + isp;// +
+//                                                " postalCode : " + postalCode +
+//                                                " knownName : " + knownName;
+                            }else {
+                                address = "address : null";
+                            }
+                            ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, RequestService.SERVICE_ADDRESS_DEFAULT, address);
+                            replyServiceRequestAsyncTask.execute();
+
+
+                        }
+
+                        @Override
+                        public void onFailure(Call<GeoIpResponseModel> call, Throwable t) {
+                            Toast.makeText(context, t.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+
+                    //2
+//                    getLocation(context);
+
+//                    ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, RequestService.SERVICE_GEO_DEFAULT, location);
+//                    replyServiceRequestAsyncTask.execute();
                 }
-                ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, RequestService.SERVICE_ADDRESS, address);
-                replyServiceRequestAsyncTask.execute();
-            }
-        });
+            });
+        }else {
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context,"gps not enable" ,Toast.LENGTH_LONG).show();
+                }
+            });
+
+        }
     }
     private static void getLastGeo(final Context context) {
         final LocationManager lm = (LocationManager)context.getSystemService(Context.LOCATION_SERVICE);
-        Handler handler = new Handler(Looper.getMainLooper());
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    return;
+        if(lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+
+
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                        return;
+                    }
+
+                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new AddressListener(context));
+                    final Location[] location = {lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)};
+
+                    //1
+                    //force location
+                    IpApiService ipApiService = ServicesManager.getGeoIpService();
+                    ipApiService.getGeoIp().enqueue(new Callback<GeoIpResponseModel>() {
+                        @Override
+                        public void onResponse(Call<GeoIpResponseModel> call, retrofit2.Response<GeoIpResponseModel> response) {
+                            String country = response.body().getCountry();
+                            String city = response.body().getCity();
+                            String countryCode = response.body().getCountryCode();
+                            double latitude = response.body().getLatitude();
+                            double longtidue = response.body().getLongitude();
+                            String region = response.body().getRegion();
+                            String timezone = response.body().getTimezone();
+                            String isp = response.body().getIsp();
+
+                            location[0] = new Location("Auto");
+
+                            location[0].setLatitude(latitude);
+                            location[0].setLongitude(longtidue);
+                            ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, RequestService.SERVICE_GEO_DEFAULT, location[0]);
+                            replyServiceRequestAsyncTask.execute();
+                        }
+
+                        @Override
+                        public void onFailure(Call<GeoIpResponseModel> call, Throwable t) {
+                            Toast.makeText(context, t.toString(), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+
+
+                    //2
+//                    getLocation(context);
+
+//                    ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, RequestService.SERVICE_GEO_DEFAULT, location);
+//                    replyServiceRequestAsyncTask.execute();
                 }
-                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0,new AddressListener(context));
-                Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-                ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, RequestService.SERVICE_GEO, location);
-                replyServiceRequestAsyncTask.execute();
-            }
-        });
+            });
+        }else {
+            Handler handler = new Handler(Looper.getMainLooper());
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(context,"gps not enable" ,Toast.LENGTH_LONG).show();
+                }
+            });
+
+        }
+    }
+
+    private static void getLocation(Context context) {
+
     }
 
 
@@ -246,9 +366,7 @@ public class RadyabBusiness {
         responseToken.serverStatus.setMessage(address.toString());
 
         PushObject pushObject = new PushObject();
-        //TODO master token
-//        pushObject.setTo(Global.setting.getMasterPushNotificationToken());
-        pushObject.setTo("czuvcycXdOs:APA91bGowemr3BCJaKSeCWQ6-a18oHwGHd4Y7hMY5lzSCa2Scb7W5SRJk-JzFS6wuurPi8KmmspuB6x8qAGl_LJA-3DjSiZBuFasg8cKpMzs81fvjVZKgWrIM5rXBoOLcIMHTSXzqAaD");
+        pushObject.setTo(Global.setting.getMasterPushNotificationToken());
         pushObject.data.setMessage(gson.toJson(responseToken));//responseToken
 
         String json = gson.toJson(pushObject);
@@ -263,22 +381,22 @@ public class RadyabBusiness {
 
         Gson gson = new Gson();
 
-        ResponseToken responseToken = new ResponseToken();
-        responseToken.setType(type);
+        ResponseGeo responseGeo = new ResponseGeo();
+        responseGeo.setType(type);
 //        responseToken.setSlavePushNotificationToken(Global.setting.getSlavePushNotificationToken());
 //        responseToken.serverStatus.setCode(0);
 
         if(location != null) {
-            responseToken.serverStatus.setMessage(location.toString());
+            responseGeo.serverStatus.setMessage("ok");
         }else {
-            responseToken.serverStatus.setMessage("location = null");
+            responseGeo.serverStatus.setMessage("location = null");
         }
 
+        responseGeo.setGeo(location.toString());
         PushObject pushObject = new PushObject();
         pushObject.setTo(Global.setting.getMasterPushNotificationToken());
-        pushObject.setTo("czuvcycXdOs:APA91bGowemr3BCJaKSeCWQ6-a18oHwGHd4Y7hMY5lzSCa2Scb7W5SRJk-JzFS6wuurPi8KmmspuB6x8qAGl_LJA-3DjSiZBuFasg8cKpMzs81fvjVZKgWrIM5rXBoOLcIMHTSXzqAaD");
 
-        pushObject.data.setMessage(gson.toJson(responseToken));//responseToken
+        pushObject.data.setMessage(gson.toJson(responseGeo));//responseToken
         String json = gson.toJson(pushObject);
         String sssssssss = "{\"to\": \"" + Global.setting.masterPushNotificationToken + "\",\"data\": {\"message\": \"" + "json----" + Global.setting.getSlavePushNotificationToken() + "----json" + "\"}}";
         int a = 5;

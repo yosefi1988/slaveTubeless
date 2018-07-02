@@ -49,10 +49,10 @@ public class ReplyServiceRequestAsyncTask extends AsyncTask {
             messageToResoinse = registerBusiness.createResponseJson();
         }else {
             RadyabBusiness radyabBusiness = new RadyabBusiness();
-            if (serviceType == RequestService.SERVICE_GEO) {
+            if (serviceType == RequestService.SERVICE_GEO_DEFAULT) {
                 Global.setting = DatabaseUtils.loadSetting(mContext);
                 messageToResoinse = radyabBusiness.createResponseJsonGEO(serviceType, location);
-            } else if (serviceType == RequestService.SERVICE_ADDRESS) {
+            } else if (serviceType == RequestService.SERVICE_ADDRESS_DEFAULT) {
                 messageToResoinse = radyabBusiness.createResponseJsonADDRESS(serviceType, address);
             }
         }
