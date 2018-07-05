@@ -52,6 +52,10 @@ dependencies {
 
     //end location
 
+    annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+    compile 'com.google.android.gms:play-services-location:15.0.1'
+
+
 }
 
 

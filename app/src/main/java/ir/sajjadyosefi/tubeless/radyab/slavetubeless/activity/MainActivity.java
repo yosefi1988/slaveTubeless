@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.R;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.activity.testActivities.GpsTestActivity;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
 
 public class MainActivity extends AppCompatActivity {
@@ -55,6 +56,14 @@ public class MainActivity extends AppCompatActivity {
                 DatabaseUtils.clearMasterSetting(mContext);
                 Toast.makeText(mContext,"OK" ,Toast.LENGTH_LONG).show();
                 Intent intent = new Intent(mContext,waitForRegister.class);
+                mContext.startActivity(intent);
+                finish();
+            }
+        });
+        (findViewById(R.id.buttonTestLocation)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(mContext,GpsTestActivity.class);
                 mContext.startActivity(intent);
                 finish();
             }

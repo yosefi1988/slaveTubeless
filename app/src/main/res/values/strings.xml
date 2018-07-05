@@ -10,4 +10,9 @@
     <string name="sms_receive">پیامک توسط مستر دریافت شد</string>
     <string name="sms_not_receive">پیامک توسط مستر دریافت نشد</string>
     <string name="cannot_send_sms">امکان ارسال پیامک موجود نیست</string>
+
+
+    <string name="start_updates">START LOCATION UPDATES</string>
+    <string name="stop_updates">STOP LOCATION UPDATES</string>
+    <string name="get_last_location">GET LAST LOCATION</string>
 </resources>
