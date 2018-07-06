@@ -36,25 +36,6 @@ public class testActivity extends AppCompatActivity {
         setContentView(R.layout.activity_test);
         context = this;
 
-        LocationManager lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
-            return;
-        }
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 2000, 10,new AddressListener(context));
-
-        Location location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        double longitude = location.getLongitude();
-        double latitude = location.getLatitude();
-
-        Toast.makeText(context, longitude + "" , Toast.LENGTH_LONG).show();
-        Toast.makeText(context, latitude + "" , Toast.LENGTH_LONG).show();
     }
 
 }

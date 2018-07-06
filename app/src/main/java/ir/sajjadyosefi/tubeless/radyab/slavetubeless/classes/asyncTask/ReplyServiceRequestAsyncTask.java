@@ -6,14 +6,16 @@ import android.os.AsyncTask;
 import android.widget.Toast;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.Global;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.RadyabBusiness;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.GpsBusiness;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.RegisterBusiness;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.Sms;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.BasicObject;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.GooglePushResponse;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.services.RequestService;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.networkLayout.HttpUtils;
+
+import static ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.services.RequestService.SERVICE_ADDRESS_DEFAULT;
+import static ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.services.RequestService.SERVICE_GEO_DEFAULT;
 
 /**
  * Created by sajjad on 5/7/2018.
@@ -29,33 +31,48 @@ public class ReplyServiceRequestAsyncTask extends AsyncTask {
 
     private String messageToResoinse;
 
-    public ReplyServiceRequestAsyncTask(Context mContext, int serviceAddress, String address) {
-        this.mContext = mContext;
-        this.serviceType = serviceAddress;
-        this.address = address;
+//    public ReplyServiceRequestAsyncTask(Context mContext, int serviceAddress, String address) {
+//        this.mContext = mContext;
+//        this.serviceType = serviceAddress;
+//        this.address = address;
+//    }
+
+
+    public ReplyServiceRequestAsyncTask(Context mContext, int serviceType, String radioStatus, Object object) {
+        init(mContext, serviceType, radioStatus, object);
     }
 
-    public ReplyServiceRequestAsyncTask(Context mContext, int serviceAddress, Location loc) {
+    private void init(Context mContext, int serviceType, String radioStatus, Object object) {
         this.mContext = mContext;
-        this.serviceType = serviceAddress;
-        this.location = loc;
+        this.serviceType = serviceType;
+
+        if(serviceType == 0){
+            RegisterBusiness registerBusiness = new RegisterBusiness();
+            messageToResoinse = registerBusiness.createResponseJson();
+        }else {
+            GpsBusiness gpsBusiness = new GpsBusiness();
+            if (serviceType == SERVICE_GEO_DEFAULT ){
+                if(radioStatus == null){
+                    location = (Location) object;
+                    messageToResoinse = gpsBusiness.createResponseJson(serviceType, location);
+
+                }else {
+                    messageToResoinse = gpsBusiness.createResponseJson(serviceType, radioStatus);
+                }
+            }else if (serviceType == SERVICE_ADDRESS_DEFAULT){
+                messageToResoinse = gpsBusiness.createResponseJsonADDRESS(serviceType, address);
+
+            }
+        }
+    }
+
+    public ReplyServiceRequestAsyncTask(Context context, int serviceType) {
+        init(context, serviceType, null, null);
     }
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        if(serviceType == 0){
-            RegisterBusiness registerBusiness = new RegisterBusiness();
-            messageToResoinse = registerBusiness.createResponseJson();
-        }else {
-            RadyabBusiness radyabBusiness = new RadyabBusiness();
-            if (serviceType == RequestService.SERVICE_GEO_DEFAULT) {
-                Global.setting = DatabaseUtils.loadSetting(mContext);
-                messageToResoinse = radyabBusiness.createResponseJsonGEO(serviceType, location);
-            } else if (serviceType == RequestService.SERVICE_ADDRESS_DEFAULT) {
-                messageToResoinse = radyabBusiness.createResponseJsonADDRESS(serviceType, address);
-            }
-        }
     }
 
     @Override
@@ -82,7 +99,8 @@ public class ReplyServiceRequestAsyncTask extends AsyncTask {
 
         try {
             for (GooglePushResponse.Results results : googlePushResponse.getResults()) {
-                Toast.makeText(mContext, results.error, Toast.LENGTH_LONG).show();
+                if(results.error !=null && results.error.length() >1)
+                    Toast.makeText(mContext, results.error, Toast.LENGTH_LONG).show();
             }
         }catch (Exception ex){
             Toast.makeText(mContext, ex.getMessage(), Toast.LENGTH_LONG).show();

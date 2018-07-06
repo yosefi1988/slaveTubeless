@@ -8,7 +8,8 @@ import android.widget.Toast;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-import static ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.RadyabBusiness.handleNotifications;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.GpsBusiness;
+
 
 /**
  * Created by sajjad on 12/5/2017.
@@ -21,7 +22,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d("Zero TO Hero", "Sender :" + remoteMessage.getFrom());
         if (remoteMessage.getData().size() > 0) {
             Log.d("Zero TO Hero", "Data :" + remoteMessage.getData());
-            handleNotifications(getApplicationContext(),remoteMessage.getData().toString());
+            GpsBusiness gpsBusiness = new GpsBusiness();
+            gpsBusiness.handleNotifications(getApplicationContext(),remoteMessage.getData().toString());
         }
         if (remoteMessage.getNotification() != null) {
             Log.d("Zero TO Hero", "MessageGetService :" + remoteMessage.getNotification().getBody());

@@ -25,8 +25,8 @@ public class RegisterBusiness {
         this.mContext = context;
 
         if (checkMessageRandomCode(message))
-            if (DatabaseUtils.saveMasterToken(context, message.substring(8), sender)) {
-                (new ReplyServiceRequestAsyncTask(context,0,"")).execute();
+            if (DatabaseUtils.saveMasterToken(mContext, message.substring(8), sender)) {
+                (new ReplyServiceRequestAsyncTask(mContext,0)).execute();
             }
     }
 

@@ -8,6 +8,15 @@ public class PushObject {
 
     public PushDataString data ;
     public String to ;
+    public String time;
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
 
     public PushObject() {
         data = new PushDataString();

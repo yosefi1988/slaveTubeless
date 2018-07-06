@@ -4,23 +4,17 @@ package ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response;
  * Created by sajjad on 5/16/2018.
  */
 
-public class ResponseGeo extends ServerResponse {
+public class ResponseObject extends ServerResponse {
 
-    public String geo;
+    public String object;
     public int Type;
 
-
-    public String getGeo() {
-        return geo;
+    public String getObject() {
+        return object;
     }
 
-    public void setGeo(String geo) {
-        this.geo = geo;
-    }
-
-
-    public ResponseGeo( ) {
-        this.setServerStatus(new ServerStatus());
+    public void setObject(String object) {
+        this.object = object;
     }
 
     public int getType() {
