@@ -1,6 +1,7 @@
 package ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response;
 
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotification.PushObject;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.ServerResponse;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.ServerStatus;
 
 /**
  * Created by sajjad on 5/16/2018.

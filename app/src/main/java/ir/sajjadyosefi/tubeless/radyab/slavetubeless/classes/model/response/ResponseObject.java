@@ -1,5 +1,7 @@
 package ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response;
 
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.ServerResponse;
+
 /**
  * Created by sajjad on 5/16/2018.
  */

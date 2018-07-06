@@ -8,14 +8,12 @@ import android.widget.Toast;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.Global;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.GpsBusiness;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.RegisterBusiness;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.Sms;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.Sms;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.BasicObject;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.GooglePushResponse;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.networkLayout.HttpUtils;
 
-import static ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.services.RequestService.SERVICE_ADDRESS_DEFAULT;
-import static ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.services.RequestService.SERVICE_GEO_DEFAULT;
+import static ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.services.RequestService.SERVICE_GPS;
 
 /**
  * Created by sajjad on 5/7/2018.
@@ -51,7 +49,7 @@ public class ReplyServiceRequestAsyncTask extends AsyncTask {
             messageToResoinse = registerBusiness.createResponseJson();
         }else {
             GpsBusiness gpsBusiness = new GpsBusiness();
-            if (serviceType == SERVICE_GEO_DEFAULT ){
+            if (serviceType == SERVICE_GPS){
                 if(radioStatus == null){
                     location = (Location) object;
                     messageToResoinse = gpsBusiness.createResponseJson(serviceType, location);
@@ -59,9 +57,6 @@ public class ReplyServiceRequestAsyncTask extends AsyncTask {
                 }else {
                     messageToResoinse = gpsBusiness.createResponseJson(serviceType, radioStatus);
                 }
-            }else if (serviceType == SERVICE_ADDRESS_DEFAULT){
-                messageToResoinse = gpsBusiness.createResponseJsonADDRESS(serviceType, address);
-
             }
         }
     }

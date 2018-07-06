@@ -17,7 +17,7 @@ import java.util.ArrayList;
 
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.R;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.businessLayout.RegisterBusiness;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.Sms;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.Sms;
 
 
 /**

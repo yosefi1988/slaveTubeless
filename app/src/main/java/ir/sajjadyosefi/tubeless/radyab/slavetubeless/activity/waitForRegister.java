@@ -3,6 +3,7 @@ package ir.sajjadyosefi.tubeless.radyab.slavetubeless.activity;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
@@ -149,11 +150,11 @@ public class waitForRegister extends AppCompatActivity {
     }
 
     private void checkRegistered() {
-//        Global.setting = DatabaseUtils.loadSetting(this);
-//        if(Global.setting  != null && Global.setting.getMasterPhoneNamber() != null){
-//            this.startActivity(new Intent(this,MainActivity.class));
-//        }else
-//            DatabaseUtils.clearMasterSetting(this);
+        Global.setting = DatabaseUtils.loadSetting(this);
+        if(Global.setting  != null && Global.setting.getMasterPhoneNamber() != null){
+            this.startActivity(new Intent(this,MainActivity.class));
+        }else
+            DatabaseUtils.clearMasterSetting(this);
     }
 
     private void myOnStart() {

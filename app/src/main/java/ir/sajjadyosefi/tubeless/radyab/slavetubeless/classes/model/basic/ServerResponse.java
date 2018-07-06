@@ -1,6 +1,4 @@
-package ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response;
-
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.BasicObject;
+package ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic;
 
 /**
  * Created by sajjad on 3/1/2017.

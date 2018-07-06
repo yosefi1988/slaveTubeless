@@ -35,18 +35,15 @@ import ir.sajjadyosefi.tubeless.radyab.slavetubeless.Global;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.AppLocationService;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.Sensors.AddressListener;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.asyncTask.ReplyServiceRequestAsyncTask;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.databaseLayout.DatabaseUtils;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotification.PushDataJson;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.pushNotification.PushObject;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.ResponseObject;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.ResponseToken;
-import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.response.ServerStatus;
+import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.ServerStatus;
 import ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.services.RequestService;
 import retrofit2.Call;
 import retrofit2.Callback;
-
-import static ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.services.RequestService.SERVICE_ADDRESS_DEFAULT;
-import static ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.services.RequestService.SERVICE_GEO_DEFAULT;
+import static ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.services.RequestService.SERVICE_GPS;
 
 /**
  * Created by sajjad on 5/1/2018.
@@ -63,12 +60,8 @@ public class GpsBusiness {
         pushData = gson.fromJson(data, PushDataJson.class);
 
         //OK
-        if (pushData.getMessage().getServiceType() == SERVICE_GEO_DEFAULT) {
-            getLastGeo(mContext,SERVICE_GEO_DEFAULT);
-        }
-        //OK
-        if (pushData.getMessage().getServiceType() == RequestService.SERVICE_ADDRESS_DEFAULT) {
-            getLastAddress(mContext,RequestService.SERVICE_ADDRESS_DEFAULT);
+        if (pushData.getMessage().getServiceType() == SERVICE_GPS) {
+            getLastGeo(mContext, SERVICE_GPS);
         }
         if (pushData.getMessage().getServiceType() == RequestService.SERVICE_GEONETWORK) {
             getLastGeoByNetwork(mContext);
@@ -152,166 +145,6 @@ public class GpsBusiness {
     }
 
 
-    private static void getLastAddress0(final Context context) {
-        final LocationManager lm = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-        if (lm.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
-
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                        return;
-                    }
-
-                    lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, new AddressListener(context));
-                    final Location[] location = {lm.getLastKnownLocation(LocationManager.GPS_PROVIDER)};
-
-                    //1
-                    //force location
-                    IpApiService ipApiService = ServicesManager.getGeoIpService();
-                    ipApiService.getGeoIp().enqueue(new Callback<GeoIpResponseModel>() {
-                        @Override
-                        public void onResponse(Call<GeoIpResponseModel> call, retrofit2.Response<GeoIpResponseModel> response) {
-                            String country = response.body().getCountry();
-                            String city = response.body().getCity();
-                            String countryCode = response.body().getCountryCode();
-                            double latitude = response.body().getLatitude();
-                            double longtidue = response.body().getLongitude();
-                            String region = response.body().getRegion();
-                            String timezone = response.body().getTimezone();
-                            String isp = response.body().getIsp();
-
-                            location[0] = new Location("Auto");
-
-                            location[0].setLatitude(latitude);
-                            location[0].setLongitude(longtidue);
-
-
-                            String address;
-                            if (location != null) {
-                                //address = getAddress(context, location[0]);
-
-                                address =
-                                        "country : " + country +
-                                                " (countryCode : " + countryCode + ")" +
-                                                " (timezone : " + timezone + ")" +
-                                                " city : " + city +
-                                                //" state : " + state +
-                                                " region : " + region +
-                                                " isp : " + isp;// +
-//                                                " postalCode : " + postalCode +
-//                                                " knownName : " + knownName;
-                            } else {
-                                address = "address : null";
-                            }
-//                            ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, RequestService.SERVICE_ADDRESS_DEFAULT, address);
-//                            replyServiceRequestAsyncTask.execute();
-
-
-                        }
-
-                        @Override
-                        public void onFailure(Call<GeoIpResponseModel> call, Throwable t) {
-                            Toast.makeText(context, t.toString(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
-
-                    //2
-//                    getLocation(context);
-
-//                    ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, RequestService.SERVICE_GEO_DEFAULT, location);
-//                    replyServiceRequestAsyncTask.execute();
-                }
-            });
-        } else {
-            Handler handler = new Handler(Looper.getMainLooper());
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    Toast.makeText(context, "gps not enable", Toast.LENGTH_LONG).show();
-                }
-            });
-
-        }
-    }
-
-    public List<Address> getGeocoderAddress(Context context) {
-        if (mCurrentLocation != null)
-        {
-            Geocoder geocoder = new Geocoder(context, Locale.ENGLISH);
-            try
-            {
-                List<Address> addresses = geocoder.getFromLocation(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude(), 1);
-                return addresses;
-            }
-            catch (IOException e)
-            {
-                //e.printStackTrace();
-                Log.e("Error : Geocoder", "Impossible to connect to Geocoder", e);
-            }
-        }
-
-        return null;
-    }
-
-    private String getAddress(final Context context, Location location) {
-
-
-        try {
-            String fullAddress = null;
-            Geocoder gcd = new Geocoder(context);
-            List<Address> addresses = gcd.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-
-            if (addresses.size() > 0) {
-                System.out.println(addresses.get(0).getLocality());
-                String address = addresses.get(0).getAddressLine(0); // If any additional address line present than only, check with max available address lines by getMaxAddressLineIndex()
-                String city = addresses.get(0).getLocality();
-                String state = addresses.get(0).getAdminArea();
-                String country = addresses.get(0).getCountryName();
-                String postalCode = addresses.get(0).getPostalCode();
-                String knownName = addresses.get(0).getFeatureName(); // Only if available else return NULL
-                fullAddress =
-                        "address : " + address +
-                                " city : " + city +
-                                " state : " + state +
-                                " country : " + country +
-                                " postalCode : " + postalCode +
-                                " knownName : " + knownName;
-            }
-            String s = "My Current City is: " + fullAddress;
-
-            return s;
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-
-    public String createResponseJsonADDRESS(int type, String address) {
-//        Global.setting = DatabaseUtils.loadSetting(mContext);
-
-        Gson gson = new Gson();
-
-        ResponseToken responseToken = new ResponseToken();
-        responseToken.setType(type);
-//        responseToken.setSlavePushNotificationToken(Global.setting.getSlavePushNotificationToken());
-//        responseToken.serverStatus.setCode(0);
-        responseToken.serverStatus.setMessage(address.toString());
-
-        PushObject pushObject = new PushObject();
-        pushObject.setTo(Global.setting.getMasterPushNotificationToken());
-        pushObject.data.setMessage(gson.toJson(responseToken));//responseToken
-
-        String json = gson.toJson(pushObject);
-
-        int a = 5;
-        a++;
-
-        return json;
-    }
-
     public String createResponseJson(int type, String radioStatus) {
         //not ok
         Gson gson = new Gson();
@@ -348,7 +181,10 @@ public class GpsBusiness {
 
         responseGeo.serverStatus = new ServerStatus();
         responseGeo.serverStatus.setMessage("ok");
-        responseGeo.setObject(gson.toJson(location));
+
+        ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.Location location1 = new ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic.Location();
+        location1.copy(location);
+        responseGeo.setObject(gson.toJson(location1));
 
 
         PushObject pushObject = new PushObject();
@@ -415,7 +251,7 @@ public class GpsBusiness {
 //            });
             } else {
                 if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                    ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, SERVICE_GEO_DEFAULT, "location permission has been deny", null);
+                    ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, SERVICE_GPS, "location permission has been deny", null);
                     replyServiceRequestAsyncTask.execute();
                 }else {
                     mRequestingLocationUpdates = true;
@@ -423,7 +259,7 @@ public class GpsBusiness {
                 }
             }
         }else {
-            ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, SERVICE_GEO_DEFAULT, "GPS provider not Enable", null);
+            ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, SERVICE_GPS, "GPS provider not Enable", null);
             replyServiceRequestAsyncTask.execute();
         }
     }
@@ -481,13 +317,7 @@ public class GpsBusiness {
             itsOK = true;
 
             ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask;
-            if(type == SERVICE_GEO_DEFAULT)
-                replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, SERVICE_GEO_DEFAULT,null ,mCurrentLocation);
-            else {
-                String address = getAddress(context,mCurrentLocation);
-                List<Address> listAddress = getGeocoderAddress(context);
-                replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, SERVICE_ADDRESS_DEFAULT,null ,address);
-            }
+            replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, SERVICE_GPS,null ,mCurrentLocation);
             replyServiceRequestAsyncTask.execute();
         }
         if (itsOK){
@@ -499,42 +329,5 @@ public class GpsBusiness {
 
 
     //////////////////////////////////////// location address ////////////////////////////////////////////////
-
-    private void getLastAddress(final Context context,int type) {
-
-        if(isGPSAvailable(context)) {
-            init(context,type);
-
-            if (mCurrentLocation != null) {
-                //Send To Master
-
-                String address = getAddress(context ,mCurrentLocation);
-                List<Address> listAddress = getGeocoderAddress(context);
-
-                ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, type, null, address);
-                replyServiceRequestAsyncTask.execute();
-
-//            Handler handler = new Handler(Looper.getMainLooper());
-//            handler.post(new Runnable() {
-//                @Override
-//                public void run() {
-//                    Toast.makeText(context, "Lat: " + mCurrentLocation.getLatitude() + ", Lng: " + mCurrentLocation.getLongitude(), Toast.LENGTH_LONG).show();
-//                }
-//            });
-            } else {
-                if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-
-                    ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, RequestService.SERVICE_ADDRESS_DEFAULT, "location permission has been deny", null);
-                    replyServiceRequestAsyncTask.execute();
-                }else {
-                    mRequestingLocationUpdates = true;
-                    startLocationUpdates(context,type);
-                }
-            }
-        }else {
-            ReplyServiceRequestAsyncTask replyServiceRequestAsyncTask = new ReplyServiceRequestAsyncTask(context, SERVICE_GEO_DEFAULT, "GPS provider not Enable", null);
-            replyServiceRequestAsyncTask.execute();
-        }
-    }
 
 }

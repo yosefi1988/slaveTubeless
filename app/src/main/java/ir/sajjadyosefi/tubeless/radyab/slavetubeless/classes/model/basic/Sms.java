@@ -1,4 +1,4 @@
-package ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model;
+package ir.sajjadyosefi.tubeless.radyab.slavetubeless.classes.model.basic;
 
 /**
  * Created by sajjad on 5/1/2018.
