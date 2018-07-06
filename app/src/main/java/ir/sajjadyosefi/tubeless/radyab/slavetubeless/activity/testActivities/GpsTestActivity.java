@@ -308,15 +308,8 @@ public class GpsTestActivity extends AppCompatActivity {
         }
     }
 
-    public void showLastKnownAddress(View view) {
-        if (mCurrentLocation != null) {
-//            Toast.makeText(getApplicationContext(), "Lat: " + mCurrentLocation.getLatitude()
-//                    + ", Lng: " + mCurrentLocation.getLongitude(), Toast.LENGTH_LONG).show();
-
-            Toast.makeText(context, getAddress(context, mCurrentLocation), Toast.LENGTH_LONG).show();
-        } else {
-            Toast.makeText(getApplicationContext(), "Last known location is not available!", Toast.LENGTH_SHORT).show();
-        }
+    public void back(View view) {
+        finish();
     }
 
     private String getAddress(final Context context, Location location) {
